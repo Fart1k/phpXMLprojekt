@@ -1,6 +1,17 @@
 <?php
 $opilased = simplexml_load_file('opilased.xml');
-$feed = simplexml_load_file("https://www.err.ee/rss")
+//õpilase otsing
+function elukohtaOtsing($paring) {
+    global $opilased;
+    $tulemus = array();
+    foreach($opilased->opilane as $opilane) {
+        if(substr(strtolower($opilane->elukoht), 0, strlen($paring)) == strtolower($paring)) {
+            array_push($tulemus, $opilane);
+        }
+    }
+    return $tulemus;
+}
+
 ?>
 <!doctype html>
 <html lang="en">
@@ -19,6 +30,19 @@ $feed = simplexml_load_file("https://www.err.ee/rss")
 echo "1.Õpilase nimi: ".$opilased->opilane[0]->nimi;
 //Kõik õpilased
 ?>
+<form action="?" method="post">
+    <label for="otsing">Elukoht:</label>
+    <input type="text" name="otsing" id="otsing" >
+    <input type="submit" value="Otsi">
+</form>
+<?php
+if(!empty($_POST['otsing'])) {
+    $tulemus = elukohtaOtsing($_POST['otsing']);
+    foreach ($tulemus as $opilane) {
+       echo $opilane->nimi." - ".$opilane->elukoht. "<br>";
+    }
+}
+?>
 <table>
     <tr>
         <th>
@@ -35,7 +59,7 @@ echo "1.Õpilase nimi: ".$opilased->opilane[0]->nimi;
         </th>
     </tr>
     <?php
-    foreach ($opilased->opilane as $opilane ) {
+    foreach ($opilased->opilane as $opilane) {
         echo "<tr>";
         echo "<td>".$opilane->nimi."</td>";
         echo "<td>".$opilane->isikukood."</td>";
@@ -45,19 +69,6 @@ echo "1.Õpilase nimi: ".$opilased->opilane[0]->nimi;
     }
     ?>
 </table>
-
-<h1>RSS uudiste lugemine </h1>
-<?php
-echo "<ul>";
-foreach($feed->channel->item as $item) {
-    echo "<li>";
-    echo "<a href='$item->link' target='_blank'>".$item->title."</a>";
-    echo "<br>".$item->description;
-    echo " Kuupäev: ".$item->pubDate;
-    echo "</li>";
-}
-echo "</ul>";
-?>
 
 </body>
 </html>

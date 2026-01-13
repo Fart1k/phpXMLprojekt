@@ -9,7 +9,8 @@
             <linn>Tallinn</linn>
             <maakond>Harjumaa</maakond>
         </elukoht>
-
+    </opilane>
+    <opilane>
         <nimi>Peeter</nimi>
         <isikukood>64565452</isikukood>
         <eriala>IT-spetsialist</eriala>
@@ -17,7 +18,8 @@
             <linn>Jõhvi</linn>
             <maakond>Ida-Virumaa</maakond>
         </elukoht>
-
+    </opilane>
+    <opilane>
         <nimi>Henry</nimi>
         <isikukood>67859904</isikukood>
         <eriala>Logistika IT Noorem spetsialist</eriala>
@@ -25,7 +27,8 @@
             <linn>Tartu</linn>
             <maakond>Tartumaa</maakond>
         </elukoht>
-
+    </opilane>
+    <opilane>
         <nimi>Rookie</nimi>
         <isikukood>43143123</isikukood>
         <eriala>Noorem Tarkvaraarendaja</eriala>
@@ -33,7 +36,8 @@
             <linn>Tallinn</linn>
             <maakond>Harjumaa</maakond>
         </elukoht>
-
+    </opilane>
+    <opilane>
         <nimi>Kaper</nimi>
         <isikukood>63543242</isikukood>
         <eriala>Õpetaja</eriala>
