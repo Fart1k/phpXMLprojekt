@@ -1,5 +1,6 @@
 <?php
 $opilased = simplexml_load_file('opilased.xml');
+$feed = simplexml_load_file("https://www.err.ee/rss")
 ?>
 <!doctype html>
 <html lang="en">
@@ -44,6 +45,19 @@ echo "1.Õpilase nimi: ".$opilased->opilane[0]->nimi;
     }
     ?>
 </table>
+
+<h1>RSS uudiste lugemine </h1>
+<?php
+echo "<ul>";
+foreach($feed->channel->item as $item) {
+    echo "<li>";
+    echo "<a href='$item->link' target='_blank'>".$item->title."</a>";
+    echo "<br>".$item->description;
+    echo " Kuupäev: ".$item->pubDate;
+    echo "</li>";
+}
+echo "</ul>";
+?>
 
 </body>
 </html>
