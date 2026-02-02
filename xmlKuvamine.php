@@ -6,24 +6,34 @@ function LisaOpilane()
     $xmlDoc->preserveWhiteSpace = false;
     $xmlDoc->load("opilased.xml");
     $xmlDoc->formatOutput = true;
-    $xmlOpilane = $xmlDoc->createElement("opilane");
-    $xmlDoc->appendChild($xmlOpilane);
-    $xmlRoot = $xmlDoc->documentElement;
-    $xmlRoot->appendChild($xmlOpilane);
-    $elukoht = $xmlDoc->createElement("elukoht");
-    $xmlOpilane->appendChild($elukoht);
-    unset($_POST["submit"]);
-    foreach ($_POST as $voti => $vaartus)
-    {
-        $kirje = $xmlDoc->createElement($voti, $vaartus);
 
-        if ($voti == "linn" || $voti == "maakond")
-            $elukoht->appendChild($kirje);
-        else
-            $xmlOpilane->appendChild($kirje);
-    }
+    $xmlRoot = $xmlDoc->documentElement;
+    $xmlOpilane = $xmlDoc->createElement("opilane");
+    $xmlRoot->appendChild($xmlOpilane);
+
+    $xmlOpilane->appendChild($xmlDoc->createElement("pilt", $_POST["pilt"]));
+
+    $elukoht = $xmlDoc->createElement("elukoht");
+    $elukoht->appendChild($xmlDoc->createElement("linn", $_POST["linn"]));
+    $elukoht->appendChild($xmlDoc->createElement("maakond", $_POST["maakond"]));
+    $xmlOpilane->appendChild($elukoht);
+
+    $xmlOpilane->appendChild($xmlDoc->createElement("nimi", $_POST["nimi"]));
+    $xmlOpilane->appendChild($xmlDoc->createElement("eriala", $_POST["eriala"]));
+    $xmlOpilane->appendChild($xmlDoc->createElement("isikukood", $_POST["isikukood"]));
+
+    $aine1 = $xmlDoc->createElement("aine");
+    $aine1->appendChild($xmlDoc->createElement("nimetus", $_POST["aine1"]));
+    $aine1->appendChild($xmlDoc->createElement("hinne", $_POST["hinne1"]));
+    $xmlOpilane->appendChild($aine1);
+
+    $aine2 = $xmlDoc->createElement("aine");
+    $aine2->appendChild($xmlDoc->createElement("nimetus", $_POST["aine2"]));
+    $aine2->appendChild($xmlDoc->createElement("hinne", $_POST["hinne2"]));
+    $xmlOpilane->appendChild($aine2);
 
     $xmlDoc->save("opilased.xml");
+
     unset($_POST["submit"]);
 }
     if(isset($_POST["submit"]))
@@ -42,10 +52,20 @@ function erialaOtsing($paring){
         if (substr(strtolower($opilane->eriala), 0, strlen($paring))
             == strtolower($paring)) {
             array_push($tulemus, $opilane);
-        } else if (substr(strtolower($opilane->nimi), 0, strlen($paring))
+        } 
+        else if (substr(strtolower($opilane->nimi), 0, strlen($paring))
             == strtolower($paring)) {
             array_push($tulemus, $opilane);
-        } else if (substr(strtolower($opilane->isikukood), 0, strlen($paring))
+        } 
+        else if (substr(strtolower($opilane->isikukood), 0, strlen($paring))
+            == strtolower($paring)) {
+            array_push($tulemus, $opilane);
+        }
+        else if (substr(strtolower($opilane->aine->nimetus), 0, strlen($paring))
+            == strtolower($paring)) {
+            array_push($tulemus, $opilane);
+        }
+        else if (substr(strtolower($opilane->pilt), 0, strlen($paring))
             == strtolower($paring)) {
             array_push($tulemus, $opilane);
         }
@@ -61,6 +81,7 @@ function erialaOtsing($paring){
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="style.css">
     <title>XML faili kuvamine - Opilased.xml</title>
 </head>
 <body>
@@ -83,6 +104,8 @@ if(!empty($_POST['otsing'])){
         <th>Õpilase nimi</th>
         <th>Isikukood</th>
         <th>Eriala</th>
+        <th>Aine</th>
+        <th>Pilt</th>
         <th>Elukoht</th>
     </tr>";
 foreach($tulemus as $opilane){
@@ -90,6 +113,13 @@ foreach($tulemus as $opilane){
         echo "<td>".$opilane->nimi."</td>";
         echo "<td>".$opilane->isikukood."</td>";
         echo "<td>".$opilane->eriala."</td>";
+        echo "<td>";
+        foreach ($opilane->aine as $aine) {
+            echo $aine->nimetus." (".$aine->hinne.")<br>";
+        }
+        echo "</td>";
+
+        echo "<td><img src='".$opilane->pilt."'></td>";
         echo "<td>".$opilane->elukoht->linn.", ".
             $opilane->elukoht->maakond."</td>";
         echo "</tr>";
@@ -112,6 +142,12 @@ foreach($tulemus as $opilane){
             Eriala
         </th>
         <th>
+            Aine
+        </th>
+        <th>
+            Pilt
+        </th>
+        <th>
             Elukoht
         </th>
     </tr>
@@ -121,6 +157,13 @@ foreach($tulemus as $opilane){
         echo "<td>".$opilane->nimi."</td>";
         echo "<td>".$opilane->isikukood."</td>";
         echo "<td>".$opilane->eriala."</td>";
+        echo "<td>";
+        foreach ($opilane->aine as $aine) {
+            echo $aine->nimetus . " (" . $aine->hinne . ")<br>";
+        }
+        echo "</td>";
+
+        echo "<td><img src='".$opilane->pilt."'></td>";
         echo "<td>".$opilane->elukoht->linn.",".$opilane->elukoht->maakond."</td>";
         echo "</tr>";
     }
@@ -139,9 +182,31 @@ foreach($tulemus as $opilane){
             <td><label for="eriala">Eriala:</label></td>
             <td><input type="text" name="eriala" id="eriala" ></td>
         </tr>
+
         <tr>
             <td><label for="isikukood">Isikukood:</label></td>
-            <td><input type="text" name="isikukood" id="isikukood" ></td>
+            <td><input type="number" name="isikukood" id="isikukood" ></td>
+        </tr>
+        <tr>
+        <td>Aine 1:</td>
+        <td><input type="text" name="aine1"></td>
+        </tr>
+        <tr>
+            <td>Hinne 1:</td>
+            <td><input type="number" name="hinne1" min="1" max="5"></td>
+        </tr>
+
+        <tr>
+            <td>Aine 2:</td>
+            <td><input type="text" name="aine2"></td>
+        </tr>
+        <tr>
+            <td>Hinne 2:</td>
+            <td><input type="number" name="hinne2" min="1" max="5"></td>
+        </tr>
+        <tr>
+            <td><label for="pilt">Pilt (URL):</label></td>
+            <td><input type="text" name="pilt" id="pilt" ></td>
         </tr>
         <tr>
             <td><label for="linn">Linn</label></td>
@@ -158,8 +223,5 @@ foreach($tulemus as $opilane){
         </tr>
     </form>
 </table>
-
-
-
 </body>
 </html>
